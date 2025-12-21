@@ -7,11 +7,11 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>550</height>
+    <height>650</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>ToolSettingsForm</string>
+   <string>小工具設定</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -28,129 +28,78 @@
      </property>
      <layout class="QFormLayout" name="formLayout">
       <item row="0" column="0">
-       <widget class="QLabel" name="coordX_label">
-        <property name="text">
-         <string>座標 X (px):</string>
-        </property>
-       </widget>
+       <widget class="QLabel" name="label_X"><property name="text"><string>座標 X (px):</string></property></widget>
       </item>
       <item row="0" column="1">
        <widget class="QLineEdit" name="coordX_lineEdit"/>
       </item>
       <item row="1" column="0">
-       <widget class="QLabel" name="coordY_label">
-        <property name="text">
-         <string>座標 Y (px):</string>
-        </property>
-       </widget>
+       <widget class="QLabel" name="label_Y"><property name="text"><string>座標 Y (px):</string></property></widget>
       </item>
       <item row="1" column="1">
        <widget class="QLineEdit" name="coordY_lineEdit"/>
       </item>
       <item row="2" column="0">
-       <widget class="QLabel" name="transparency_label">
-        <property name="text">
-         <string>透明度 (0-100%):</string>
-        </property>
-       </widget>
+       <widget class="QLabel" name="label_T"><property name="text"><string>透明度:</string></property></widget>
       </item>
       <item row="2" column="1">
        <widget class="QSlider" name="transparency_slider">
-        <property name="minimum">
-         <number>0</number>
-        </property>
-        <property name="maximum">
-         <number>100</number>
-        </property>
-        <property name="value">
-         <number>80</number>
-        </property>
-        <property name="orientation">
-         <enum>Qt::Orientation::Horizontal</enum>
-        </property>
+        <property name="maximum"><number>100</number></property>
+        <property name="orientation"><enum>Qt::Horizontal</enum></property>
        </widget>
       </item>
-      <item row="3" column="0" colspan="2">
-       <widget class="QCheckBox" name="alwaysOnTop_checkBox">
-        <property name="text">
-         <string>永遠保持在最上層</string>
-        </property>
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_pos"><property name="text"><string>視窗層級:</string></property></widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QComboBox" name="position_comboBox">
+        <item><property name="text"><string>普通 (Normal)</string></property></item>
+        <item><property name="text"><string>永遠置頂 (Stay on Top)</string></property></item>
+        <item><property name="text"><string>置於底部 (On Desktop)</string></property></item>
        </widget>
       </item>
       <item row="4" column="0" colspan="2">
-       <widget class="QCheckBox" name="clickThrough_checkBox">
-        <property name="text">
-         <string>啟用點擊穿透 (Click Through)</string>
-        </property>
+       <widget class="QCheckBox" name="draggable_checkBox">
+        <property name="text"><string>允許滑鼠拖曳移動</string></property>
        </widget>
       </item>
       <item row="5" column="0" colspan="2">
-       <widget class="QCheckBox" name="hoverHide_checkBox">
-        <property name="text">
-         <string>懸停時自動隱藏</string>
-        </property>
+       <widget class="QCheckBox" name="snapToEdge_checkBox">
+        <property name="text"><string>啟用邊緣吸附</string></property>
        </widget>
       </item>
       <item row="6" column="0" colspan="2">
+       <widget class="QCheckBox" name="clickThrough_checkBox">
+        <property name="text"><string>啟用點擊穿透 (Click Through)</string></property>
+       </widget>
+      </item>
+      <item row="7" column="0" colspan="2">
+       <widget class="QCheckBox" name="hoverHide_checkBox">
+        <property name="text"><string>懸停時自動隱藏</string></property>
+       </widget>
+      </item>
+      <item row="8" column="0" colspan="2">
        <widget class="QCheckBox" name="savePosition_checkBox">
-        <property name="text">
-         <string>儲存元件擺放位置</string>
-        </property>
+        <property name="text"><string>儲存元件擺放位置</string></property>
        </widget>
       </item>
      </layout>
     </widget>
    </item>
-   
+
    <item>
     <widget class="QGroupBox" name="data_media_group">
-     <property name="title">
-      <string>音樂路徑設定</string>
-     </property>
+     <property name="title"><string>路徑設定</string></property>
      <layout class="QFormLayout" name="formLayout_media">
-      <item row="0" column="0">
-       <widget class="QLabel" name="path_label">
-        <property name="text">
-         <string>音樂資料夾:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QLineEdit" name="musicPath_lineEdit"/>
-      </item>
-      <item row="1" column="0" colspan="2">
-       <widget class="QPushButton" name="browsePath_button">
-        <property name="text">
-         <string>瀏覽...</string>
-        </property>
-       </widget>
-      </item>
+      <item row="0" column="0"><widget class="QLabel" name="path_label"><property name="text"><string>檔案/資料夾:</string></property></widget></item>
+      <item row="0" column="1"><widget class="QLineEdit" name="musicPath_lineEdit"/></item>
+      <item row="1" column="0" colspan="2"><widget class="QPushButton" name="browsePath_button"><property name="text"><string>瀏覽...</string></property></widget></item>
      </layout>
     </widget>
    </item>
-   
-   <item>
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Orientation::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item>
-    <widget class="QPushButton" name="saveSettings_button">
-     <property name="text">
-      <string>儲存設定</string>
-     </property>
-    </widget>
-   </item>
+
+   <item><spacer name="vSpacer"><property name="orientation"><enum>Qt::Vertical</enum></property></spacer></item>
+   <item><widget class="QPushButton" name="saveSettings_button"><property name="text"><string>儲存所有設定</string></property></widget></item>
   </layout>
  </widget>
- <resources/>
- <connections/>
 </ui>
