@@ -23,7 +23,7 @@ void BaseComponent::initStyle() {
         );
 }
 
-// --- 視窗屬性讀取 (解決主人遇到的 undefined reference 錯誤) ---
+// --- 視窗屬性讀取 (解決遇到的 undefined reference 錯誤) ---
 
 int BaseComponent::windowLayer() const {
     if (this->windowFlags() & Qt::WindowStaysOnTopHint) return 1; // 置頂
@@ -32,7 +32,7 @@ int BaseComponent::windowLayer() const {
 }
 
 bool BaseComponent::isClickThrough() const {
-    // 檢查目前的視窗旗標中是否含有「點擊穿透」標籤喵！
+    // 檢查目前的視窗旗標中是否含有「點擊穿透」標籤
     return (this->windowFlags() & Qt::WindowTransparentForInput);
 }
 // --- 行為設定 ---

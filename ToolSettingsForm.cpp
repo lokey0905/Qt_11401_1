@@ -29,7 +29,7 @@ void ToolSettingsForm::setupInternalConnections() {
     connect(ui->coordY_lineEdit, &QLineEdit::editingFinished, this, &ToolSettingsForm::onCoordinateEdited);
     connect(ui->hoverHide_checkBox, &QCheckBox::clicked, this, &ToolSettingsForm::emitSetting);
 
-    // Slider 使用 sliderReleased 是為了避免拉動過程中發送太多次訊號喵
+    // Slider 使用 sliderReleased 是為了避免拉動過程中發送太多次訊號
     connect(ui->transparency_slider, &QSlider::sliderReleased, this, &ToolSettingsForm::emitSetting);
 
     connect(ui->position_comboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &ToolSettingsForm::emitSetting);
@@ -54,14 +54,14 @@ void ToolSettingsForm::loadToolData(const QVariantMap &toolData) {
 void ToolSettingsForm::updateAllUI(BaseComponent* w) {
     if (!w) return;
 
-    // 暫時鎖定訊號，避免同步 UI 時觸發 emitSetting 導致無限迴圈喵
+    // 暫時鎖定訊號，避免同步 UI 時觸發 emitSetting 導致無限迴圈
     this->blockSignals(true);
 
     ui->coordX_lineEdit->setText(QString::number(w->x()));
     ui->coordY_lineEdit->setText(QString::number(w->y()));
     ui->enableTool_checkBox->setChecked(w->isVisible());
 
-    // 這裡需要主人確保 BaseComponent 有這些 getter 函式喔
+    // 這裡需要確保 BaseComponent 有這些 getter 函式喔
     ui->draggable_checkBox->setChecked(w->isDraggable());
     ui->snapToEdge_checkBox->setChecked(w->isSnapEnabled());
     ui->hoverHide_checkBox->setChecked(w->isHoverHideEnabled());
@@ -84,7 +84,7 @@ void ToolSettingsForm::emitSetting() {
     else if (senderObj == ui->hoverHide_checkBox || senderObj == ui->transparency_slider) {
         QVariantMap hoverData;
         hoverData["enabled"] = ui->hoverHide_checkBox->isChecked();
-        // 限制 99% 避免滑鼠無法感應喵
+        // 限制 99% 避免滑鼠無法感應
         hoverData["opacity"] = qMin(ui->transparency_slider->value(), 99) / 100.0;
         emit settingChanged("hover", hoverData);
     }
@@ -130,7 +130,7 @@ void ToolSettingsForm::on_browsePath_button_clicked() {
     if (toolId == "image_viewer") {
         QString filePath = QFileDialog::getOpenFileName(this, "選擇圖片/GIF", "", "Images (*.png *.jpg *.jpeg *.gif)");
         if (!filePath.isEmpty()) {
-            // 實作主人要求的備份邏輯
+            // 實作的備份邏輯
             QString saveDir = QCoreApplication::applicationDirPath() + "/user_assets/images/";
             QDir().mkpath(saveDir);
             QFileInfo info(filePath);
@@ -149,14 +149,14 @@ void ToolSettingsForm::on_browsePath_button_clicked() {
         }
     }
 
-    // 當路徑改變時，也發送萬用訊號！標籤設為 "path" 喵
+    // 當路徑改變時，也發送萬用訊號！標籤設為 "path" 
     if (!finalPath.isEmpty()) {
         emit settingChanged("path", finalPath);
     }
 }
 
 void ToolSettingsForm::on_saveSettings_button_clicked() {
-    qDebug() << "正在儲存" << m_currentToolData["id"].toString() << "的本地設定喵！";
+    qDebug() << "正在儲存" << m_currentToolData["id"].toString() << "的本地設定";
     // 這裡可以透過發送一個 "save" 標籤來讓 ControlPanel 執行 SettingsManager 的儲存
     emit settingChanged("save_request", true);
 }

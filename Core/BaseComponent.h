@@ -30,7 +30,7 @@ public:
     void setHoverOpacity(double opacity) { m_hoverOpacity = opacity; } // 0.0 ~ 1.0
 
     // --- 狀態讀取 (Getters) ---
-    // 這些函式是讓 ControlPanel 同步介面數值的關鍵喵！
+    // 這些函式是讓 ControlPanel 同步介面數值的關鍵
     bool isDraggable() const { return m_isDraggable; }
     bool isSnapEnabled() const { return m_isSnapEnabled; }
     bool isHoverHideEnabled() const { return m_hoverHide; }
@@ -48,7 +48,7 @@ public:
     bool isClickThrough() const;
 
 signals:
-    // 當視窗座標改變時發出，讓控制面板的輸入框能跟著動喵
+    // 當視窗座標改變時發出，讓控制面板的輸入框能跟著動
     void positionChanged(int x, int y);
 
 protected:

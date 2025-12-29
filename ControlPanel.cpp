@@ -40,7 +40,7 @@ ControlPanel::ControlPanel(QWidget *parent) :
 
         BaseComponent* w = m_widgetInstances[id];
 
-        // 分發指令邏輯喵！
+        // 分發指令邏輯
         if (key == "visible") {
             w->setVisible(value.toBool());
         }
@@ -127,7 +127,7 @@ void ControlPanel::on_toolList_currentRowChanged(int currentRow)
         if (m_widgetInstances.contains(id)) {
             BaseComponent* widget = m_widgetInstances[id];
 
-            // 同步 UI 狀態喵
+            // 同步 UI 狀態
             m_settingsForm->updateAllUI(widget);
 
             // 座標即時連動：斷開舊連線並建立新連線

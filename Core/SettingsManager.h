@@ -9,7 +9,7 @@
 
 /**
  * @brief 設定管理中心 (單例模式)
- * 負責管理全域設定以及各個小工具的持久化儲存喵。
+ * 負責管理全域設定以及各個小工具的持久化儲存
  */
 class SettingsManager : public QObject
 {
@@ -41,7 +41,7 @@ public:
     QVariantMap loadWidgetConfig(const QString &id);
 
 signals:
-    // 當全域設定改變時發出，通知所有元件即時反應喵！
+    // 當全域設定改變時發出，通知所有元件即時反應
     void globalDragLockedChanged(bool locked);
     void trayIconSettingChanged(bool show);
 
