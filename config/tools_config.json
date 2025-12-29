@@ -13,37 +13,31 @@
     },
     {
         "id": "time_info",
-        "name": "3. 時間 (24H)",
+        "name": "3. 時間與日期 (Time & Date)",
         "widget_class": "TimeWidget",
         "default_enabled": true
     },
     {
-        "id": "date_info",
-        "name": "4. 日期 (YYYY-MM-DD)",
-        "widget_class": "DateWidget",
-        "default_enabled": true
-    },
-    {
         "id": "network",
-        "name": "5. 網路流量 (Network)",
+        "name": "4. 網路流量 (Network)",
         "widget_class": "NetworkWidget",
         "default_enabled": false
     },
     {
         "id": "todo_list",
-        "name": "6. 待辦清單 (To Do List)",
+        "name": "5. 待辦清單 (To Do List)",
         "widget_class": "ToDoWidget",
         "default_enabled": false
     },
     {
         "id": "image_viewer",
-        "name": "7. 圖片/GIF 顯示器",
+        "name": "6. 圖片/GIF 顯示器",
         "widget_class": "ImageWidget",
         "default_enabled": false
     },
     {
         "id": "media_player",
-        "name": "8. 音樂播放器 (Media)",
+        "name": "7. 音樂播放器 (Media)",
         "widget_class": "MediaWidget",
         "default_enabled": false
     }

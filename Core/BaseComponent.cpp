@@ -4,6 +4,7 @@
 #include <QPainter>
 #include <QApplication>
 #include <QScreen>
+#include <QDebug>
 
 BaseComponent::BaseComponent(QWidget *parent) : QWidget(parent) {
     // 基礎視窗設定：無邊框、背景透明、工具視窗(不顯示在工作列)
@@ -12,16 +13,29 @@ BaseComponent::BaseComponent(QWidget *parent) : QWidget(parent) {
 }
 
 void BaseComponent::initStyle() {
-    // 在父類別定義通用的 QSS 樣式
-    // 使用 .BaseComponent 語法可以確保子類別繼承這些外觀
+    // 統一圓角與半透明背景樣式
     this->setStyleSheet(
         "BaseComponent {"
-        "  background-color: rgba(30, 30, 30, 180);" /* 半透明深灰色背景 */
-        "  border-radius: 20px;"                     /* 統一圓角 */
-        "  border: 1px solid rgba(255, 255, 255, 40);" /* 細微的白色邊框線 */
+        "  background-color: rgba(30, 30, 30, 180);"
+        "  border-radius: 20px;"
+        "  border: 1px solid rgba(255, 255, 255, 40);"
         "}"
         );
 }
+
+// --- 視窗屬性讀取 (解決主人遇到的 undefined reference 錯誤) ---
+
+int BaseComponent::windowLayer() const {
+    if (this->windowFlags() & Qt::WindowStaysOnTopHint) return 1; // 置頂
+    if (this->windowFlags() & Qt::WindowStaysOnBottomHint) return 2; // 置底
+    return 0; // 普通
+}
+
+bool BaseComponent::isClickThrough() const {
+    // 檢查目前的視窗旗標中是否含有「點擊穿透」標籤喵！
+    return (this->windowFlags() & Qt::WindowTransparentForInput);
+}
+// --- 行為設定 ---
 
 void BaseComponent::setWindowLayer(int layer) {
     Qt::WindowFlags flags = this->windowFlags();
@@ -36,33 +50,43 @@ void BaseComponent::setWindowLayer(int layer) {
         flags &= ~Qt::WindowStaysOnBottomHint;
     }
     this->setWindowFlags(flags);
-    this->show(); // 重新顯示以應用 flag
+    this->show(); // 必須重新顯示以應用 Flag
+}
+
+// --- 懸停透明度邏輯 ---
+
+void BaseComponent::enterEvent(QEnterEvent *event) {
+    if (m_hoverHide) {
+        // 設定透明度，保留 0.01 確保滑鼠離開時仍能觸發事件
+        this->setWindowOpacity(qMax(0.01, 1.0 - m_hoverOpacity));
+    }
+    QWidget::enterEvent(event);
+}
+
+void BaseComponent::leaveEvent(QEvent *event) {
+    if (m_hoverHide) {
+        this->setWindowOpacity(1.0); // 恢復完全不透明
+    }
+    QWidget::leaveEvent(event);
 }
 
 // --- 拖曳與吸附核心邏輯 ---
-void BaseComponent::mousePressEvent(QMouseEvent *event) {
-    // 1. 檢查全域禁止拖曳開關
-    bool isGlobalLocked = SettingsManager::instance()->isGlobalDragLocked();
 
-    // 2. 只有在「非全域鎖定」且「該元件允許拖曳」時，才啟動移動邏輯
+void BaseComponent::mousePressEvent(QMouseEvent *event) {
+    bool isGlobalLocked = SettingsManager::instance()->isGlobalDragLocked();
     if (event->button() == Qt::LeftButton && !isGlobalLocked && m_isDraggable) {
         m_isMoving = true;
         m_dragPosition = event->globalPos() - this->frameGeometry().topLeft();
         event->accept();
-    } else if (isGlobalLocked) {
-        qDebug() << "喵！目前處於全域鎖定狀態，禁止移動！";
     }
 }
 
 void BaseComponent::mouseMoveEvent(QMouseEvent *event) {
     if (m_isMoving && (event->buttons() & Qt::LeftButton)) {
         QPoint newPos = event->globalPos() - m_dragPosition;
-
-        // 如果開啟吸附功能
         if (m_isSnapEnabled) {
             performSnap(newPos);
         }
-
         this->move(newPos);
         event->accept();
     }
@@ -73,28 +97,17 @@ void BaseComponent::mouseReleaseEvent(QMouseEvent *event) {
 }
 
 void BaseComponent::performSnap(QPoint &newPos) {
-    int snapMargin = 20; // 吸附感應範圍(px)
-
-    // 獲取目前視窗所在的螢幕 (支援多螢幕)
+    int snapMargin = 20;
     QScreen *currentScreen = this->screen();
     if (!currentScreen) currentScreen = QApplication::primaryScreen();
-
-    // 使用 availableGeometry 以避開工作列
     QRect screenRect = currentScreen->availableGeometry();
 
-    // 螢幕左邊緣 (相對於螢幕起始座標)
     if (qAbs(newPos.x() - screenRect.left()) < snapMargin)
         newPos.setX(screenRect.left());
-
-    // 螢幕右邊緣
     if (qAbs(newPos.x() + this->width() - screenRect.right()) < snapMargin)
         newPos.setX(screenRect.right() - this->width());
-
-    // 螢幕上邊緣
     if (qAbs(newPos.y() - screenRect.top()) < snapMargin)
         newPos.setY(screenRect.top());
-
-    // 螢幕下邊緣
     if (qAbs(newPos.y() + this->height() - screenRect.bottom()) < snapMargin)
         newPos.setY(screenRect.bottom() - this->height());
 }
