@@ -1,0 +1,44 @@
+[
+    {
+        "id": "system_monitor",
+        "name": "1. 系統監控 (CPU/RAM)",
+        "widget_class": "CpuWidget",
+        "default_enabled": true
+    },
+    {
+        "id": "disks_info",
+        "name": "2. 硬碟資訊 (Disks)",
+        "widget_class": "DiskWidget",
+        "default_enabled": true
+    },
+    {
+        "id": "time_info",
+        "name": "3. 時間與日期 (Time & Date)",
+        "widget_class": "TimeWidget",
+        "default_enabled": true
+    },
+    {
+        "id": "network",
+        "name": "4. 網路流量 (Network)",
+        "widget_class": "NetworkWidget",
+        "default_enabled": false
+    },
+    {
+        "id": "todo_list",
+        "name": "5. 待辦清單 (To Do List)",
+        "widget_class": "ToDoWidget",
+        "default_enabled": false
+    },
+    {
+        "id": "image_viewer",
+        "name": "6. 圖片/GIF 顯示器",
+        "widget_class": "ImageWidget",
+        "default_enabled": false
+    },
+    {
+        "id": "media_player",
+        "name": "7. 音樂播放器 (Media)",
+        "widget_class": "MediaWidget",
+        "default_enabled": false
+    }
+]

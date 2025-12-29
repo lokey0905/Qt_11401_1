@@ -9,16 +9,30 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    main.cpp \
-    controlpanel.cpp
+    Core/BaseComponent.cpp \
+    ControlPanel.cpp \
+    Core/SettingsManager.cpp \
+    ToolSettingsForm.cpp \
+    Widgets/TimeWidget.cpp \
+    main.cpp
 
 HEADERS += \
-    controlpanel.h
+    Core/BaseComponent.h \
+    ControlPanel.h \
+    Core/SettingsManager.h \
+    ToolSettingsForm.h \
+    Widgets/TimeWidget.h
 
 FORMS += \
-    controlpanel.ui
+    ControlPanel.ui \
+    ToolSettingsForm.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+RESOURCES += \
+    resources.qrc
+
+INCLUDEPATH += Core Widgets

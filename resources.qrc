@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>config/tools_config.json</file>
+    </qresource>
+</RCC>
