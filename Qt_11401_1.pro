@@ -15,6 +15,7 @@ SOURCES += \
     ToolSettingsForm.cpp \
     Widgets/TimeWidget.cpp \
     Widgets/CpuWidget.cpp \
+    Widgets/DiskWidget.cpp \
     main.cpp
 
 HEADERS += \
@@ -23,7 +24,8 @@ HEADERS += \
     Core/SettingsManager.h \
     ToolSettingsForm.h \
     Widgets/TimeWidget.h \
-    Widgets/CpuWidget.h
+    Widgets/CpuWidget.h \
+    Widgets/DiskWidget.h
 
 FORMS += \
     ControlPanel.ui \

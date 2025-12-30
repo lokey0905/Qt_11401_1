@@ -102,9 +102,38 @@ void ToolSettingsForm::createAdvancedSettings(const QString &toolId) {
         // 將新群組加入主佈局 (插入在最後面)
         ui->verticalLayout->insertWidget(ui->verticalLayout->count()-1, advGroup);
     }
+    else if (toolId == "disks_info") {
+        QGroupBox *advGroup = new QGroupBox("進階顯示設定", this);
+        advGroup->setObjectName("advanced_groupBox");
+        QVBoxLayout *layout = new QVBoxLayout(advGroup);
+
+        QCheckBox *chkUsage = new QCheckBox("顯示使用率百分比", advGroup);
+        chkUsage->setObjectName("chkUsage");
+        QCheckBox *chkSpeed = new QCheckBox("顯示讀寫速度 (R/W)", advGroup);
+        chkSpeed->setObjectName("chkSpeed");
+        QCheckBox *chkActive = new QCheckBox("顯示硬碟活動時間 (Active Time)", advGroup);
+        chkActive->setObjectName("chkActive");
+
+        layout->addWidget(chkUsage);
+        layout->addWidget(chkSpeed);
+        layout->addWidget(chkActive);
+
+        connect(chkUsage, &QCheckBox::clicked, this, [this, chkUsage](){
+            emit settingChanged("showUsagePercent", chkUsage->isChecked());
+        });
+        connect(chkSpeed, &QCheckBox::clicked, this, [this, chkSpeed](){
+            emit settingChanged("showTransferSpeed", chkSpeed->isChecked());
+        });
+        connect(chkActive, &QCheckBox::clicked, this, [this, chkActive](){
+            emit settingChanged("showActiveTime", chkActive->isChecked());
+        });
+
+        ui->verticalLayout->insertWidget(ui->verticalLayout->count()-1, advGroup);
+    }
 }
 
 #include "Widgets/CpuWidget.h" // 需要引入以使用 dynamic_cast
+#include "Widgets/DiskWidget.h"
 
 void ToolSettingsForm::updateAllUI(BaseComponent* w) {
     if (!w) return;
@@ -130,10 +159,20 @@ void ToolSettingsForm::updateAllUI(BaseComponent* w) {
     if (cpuWidget) {
         QComboBox* comboFreq = findChild<QComboBox*>("freqAlgo_comboBox");
         if (comboFreq) {
-            // 暫時解除 blockSignals 以便更新子元件 (雖然這裡是動態生成的，可能不在 this->blockSignals 範圍內，但保險起見)
-            // 其實 findChild 找到的元件是 this 的子物件，所以也會被 blockSignals(true) 影響
             comboFreq->setCurrentIndex(static_cast<int>(cpuWidget->frequencyMode()));
         }
+    }
+    
+    // 更新進階設定 (如果是 DiskWidget)
+    DiskWidget* diskWidget = dynamic_cast<DiskWidget*>(w);
+    if (diskWidget) {
+        QCheckBox* chkUsage = findChild<QCheckBox*>("chkUsage");
+        QCheckBox* chkSpeed = findChild<QCheckBox*>("chkSpeed");
+        QCheckBox* chkActive = findChild<QCheckBox*>("chkActive");
+        
+        if (chkUsage) chkUsage->setChecked(diskWidget->isShowUsagePercent());
+        if (chkSpeed) chkSpeed->setChecked(diskWidget->isShowTransferSpeed());
+        if (chkActive) chkActive->setChecked(diskWidget->isShowActiveTime());
     }
 
     this->blockSignals(false);

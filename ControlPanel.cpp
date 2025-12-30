@@ -3,6 +3,7 @@
 #include "SettingsManager.h"
 #include "Widgets/TimeWidget.h"
 #include "Widgets/CpuWidget.h"
+#include "Widgets/DiskWidget.h"
 #include <QFile>
 #include <QJsonDocument>
 #include <QJsonArray>
@@ -162,6 +163,8 @@ void ControlPanel::initWidgets()
             instance = new TimeWidget();
         } else if (widgetClass == "CpuWidget") {
             instance = new CpuWidget();
+        } else if (widgetClass == "DiskWidget") {
+            instance = new DiskWidget();
         }
 
         if (instance) {
