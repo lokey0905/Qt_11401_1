@@ -24,6 +24,10 @@ ControlPanel::ControlPanel(QWidget *parent) :
         qCritical() << "Failed to load tool configurations.";
     }
 
+    // 初始化全域設定 UI 狀態
+    ui->globalLockDrag_checkBox->setChecked(SettingsManager::instance()->isGlobalDragLocked());
+    ui->trayIcon_checkBox->setChecked(SettingsManager::instance()->showTrayIcon());
+
     // 2. 實例化工具
     initWidgets();
 
@@ -186,8 +190,11 @@ void ControlPanel::on_toolList_currentRowChanged(int currentRow)
             m_settingsForm->updateAllUI(widget);
 
             // 座標即時連動：斷開舊連線並建立新連線
-            disconnect(nullptr, nullptr, m_settingsForm, SLOT(setCoordinateDisplay(int, int)));
+            if (m_currentConnectedWidget) {
+                disconnect(m_currentConnectedWidget, &BaseComponent::positionChanged, m_settingsForm, &ToolSettingsForm::setCoordinateDisplay);
+            }
             connect(widget, &BaseComponent::positionChanged, m_settingsForm, &ToolSettingsForm::setCoordinateDisplay);
+            m_currentConnectedWidget = widget;
         }
     }
 }

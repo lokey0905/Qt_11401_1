@@ -102,6 +102,7 @@ void BaseComponent::performSnap(QPoint &newPos) {
     if (!currentScreen) currentScreen = QApplication::primaryScreen();
     QRect screenRect = currentScreen->availableGeometry();
 
+    // 1. 螢幕邊緣吸附
     if (qAbs(newPos.x() - screenRect.left()) < snapMargin)
         newPos.setX(screenRect.left());
     if (qAbs(newPos.x() + this->width() - screenRect.right()) < snapMargin)
@@ -110,6 +111,35 @@ void BaseComponent::performSnap(QPoint &newPos) {
         newPos.setY(screenRect.top());
     if (qAbs(newPos.y() + this->height() - screenRect.bottom()) < snapMargin)
         newPos.setY(screenRect.bottom() - this->height());
+
+    // 2. 元件間吸附
+    const auto widgets = QApplication::topLevelWidgets();
+    for (QWidget *w : widgets) {
+        // 排除自己、隱藏的視窗、以及非 BaseComponent 的視窗
+        if (w == this || !w->isVisible() || !w->inherits("BaseComponent")) continue;
+
+        QRect otherRect = w->frameGeometry();
+        
+        // X 軸吸附
+        // 左對左 (對齊)
+        if (qAbs(newPos.x() - otherRect.left()) < snapMargin) newPos.setX(otherRect.left());
+        // 右對右 (對齊)
+        if (qAbs(newPos.x() + this->width() - otherRect.right()) < snapMargin) newPos.setX(otherRect.right() - this->width());
+        // 左對右 (緊貼)
+        if (qAbs(newPos.x() - otherRect.right()) < snapMargin) newPos.setX(otherRect.right());
+        // 右對左 (緊貼)
+        if (qAbs(newPos.x() + this->width() - otherRect.left()) < snapMargin) newPos.setX(otherRect.left() - this->width());
+
+        // Y 軸吸附
+        // 上對上 (對齊)
+        if (qAbs(newPos.y() - otherRect.top()) < snapMargin) newPos.setY(otherRect.top());
+        // 下對下 (對齊)
+        if (qAbs(newPos.y() + this->height() - otherRect.bottom()) < snapMargin) newPos.setY(otherRect.bottom() - this->height());
+        // 上對下 (緊貼)
+        if (qAbs(newPos.y() - otherRect.bottom()) < snapMargin) newPos.setY(otherRect.bottom());
+        // 下對上 (緊貼)
+        if (qAbs(newPos.y() + this->height() - otherRect.top()) < snapMargin) newPos.setY(otherRect.top() - this->height());
+    }
 }
 
 void BaseComponent::paintEvent(QPaintEvent *event) {
