@@ -186,8 +186,11 @@ void ControlPanel::on_toolList_currentRowChanged(int currentRow)
             m_settingsForm->updateAllUI(widget);
 
             // 座標即時連動：斷開舊連線並建立新連線
-            disconnect(nullptr, nullptr, m_settingsForm, SLOT(setCoordinateDisplay(int, int)));
+            if (m_currentConnectedWidget) {
+                disconnect(m_currentConnectedWidget, &BaseComponent::positionChanged, m_settingsForm, &ToolSettingsForm::setCoordinateDisplay);
+            }
             connect(widget, &BaseComponent::positionChanged, m_settingsForm, &ToolSettingsForm::setCoordinateDisplay);
+            m_currentConnectedWidget = widget;
         }
     }
 }

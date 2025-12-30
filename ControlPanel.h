@@ -80,6 +80,9 @@ private:
      * @brief 輔助函式：根據目前列表選中的項目，獲取對應的 Widget 實例
      */
     BaseComponent* getCurrentSelectedWidget();
+
+    // 追蹤當前已連接訊號的 Widget，用於切換時斷開連線
+    BaseComponent* m_currentConnectedWidget = nullptr;
 };
 
 #endif // CONTROLPANEL_H
