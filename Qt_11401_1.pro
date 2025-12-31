@@ -24,6 +24,7 @@ HEADERS += \
     Core/BaseComponent.h \
     ControlPanel.h \
     Core/SettingsManager.h \
+    ThemeManager.h \
     ToolSettingsForm.h \
     Widgets/TimeWidget.h \
     Widgets/CpuWidget.h \

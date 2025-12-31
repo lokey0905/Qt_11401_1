@@ -151,6 +151,9 @@ ControlPanel::ControlPanel(QWidget *parent) :
 
     connect(ui->saveTheme_button, &QPushButton::clicked, this, &ControlPanel::on_saveTheme_clicked);
     connect(ui->applySetting_button, &QPushButton::clicked, this, &ControlPanel::on_applySetting_clicked);
+    updateThemeList();
+    connect(ui->loadTheme_button, &QPushButton::clicked, this, &ControlPanel::on_LoadTheme_clicked);
+    connect(ui->deleteTheme_button, &QPushButton::clicked, this, &ControlPanel::on_DeleteTheme_clicked);
 }
 
 void ControlPanel::initWidgets()
@@ -227,7 +230,74 @@ bool ControlPanel::loadToolsConfiguration()
 }
 
 void ControlPanel::on_saveTheme_clicked() {
-    qDebug() << "設定已儲存";
+    // 使用正確的物件名稱 themeName_lineEdit
+    QString name = ui->themeName_lineEdit->text().trimmed();
+    if (name.isEmpty()) {
+        QMessageBox::warning(this, "提示", "請輸入主題名稱");
+        return;
+    }
+
+    QJsonObject currentLayout = getGlobalLayoutData();
+    themeMgr.saveTheme(name, currentLayout);
+
+    updateThemeList();
+    ui->themeName_lineEdit->clear();
+    qDebug() << "主題「" << name << "」已儲存";
+}
+
+QJsonObject ControlPanel::getGlobalLayoutData() {
+    QJsonObject root;
+    QJsonArray widgetsArray;
+
+    // 遍歷組員建立的 QMap<QString, BaseComponent*>
+    for (auto it = m_widgetInstances.begin(); it != m_widgetInstances.end(); ++it) {
+        QString id = it.key();
+        BaseComponent* w = it.value();
+
+        if (w) {
+            QJsonObject widgetInfo;
+            widgetInfo["id"] = id;
+            widgetInfo["x"] = w->x();
+            widgetInfo["y"] = w->y();
+            widgetInfo["visible"] = w->isVisible();
+            widgetsArray.append(widgetInfo);
+        }
+    }
+
+    root["widgets"] = widgetsArray;
+    return root;
+}
+
+void ControlPanel::on_LoadTheme_clicked() {
+    QListWidgetItem *item = ui->themeList_widget->currentItem();
+    if (!item) return;
+
+    QJsonObject data = themeMgr.loadTheme(item->text());
+    QJsonArray widgets = data["widgets"].toArray();
+
+    for (int i = 0; i < widgets.size(); ++i) {
+        QJsonObject obj = widgets[i].toObject();
+        QString id = obj["id"].toString();
+        if (m_widgetInstances.contains(id)) {
+            BaseComponent* w = m_widgetInstances[id];
+            w->move(obj["x"].toInt(), obj["y"].toInt());
+            w->setVisible(obj["visible"].toBool());
+        }
+    }
+    on_toolList_currentRowChanged(ui->toolList_widget->currentRow());
+}
+
+void ControlPanel::on_DeleteTheme_clicked() {
+    QListWidgetItem *item = ui->themeList_widget->currentItem();
+    if (item) {
+        themeMgr.deleteTheme(item->text());
+        updateThemeList();
+    }
+}
+
+void ControlPanel::updateThemeList() {
+    ui->themeList_widget->clear();
+    ui->themeList_widget->addItems(themeMgr.getThemeList());
 }
 
 void ControlPanel::on_applySetting_clicked() {
