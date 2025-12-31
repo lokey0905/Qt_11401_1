@@ -51,6 +51,9 @@ void NetworkWidget::initStyle() {
                         "}"
                         "QLabel { color: white; background: transparent; font-family: 'Segoe UI', 'Microsoft JhengHei'; }"
                         "#titleLabel { font-size: 14px; font-weight: bold; color: rgba(255, 255, 255, 220); margin-bottom: 2px; }"
+                        "#nameLabel { font-size: 12px; font-weight: bold; color: rgba(255, 255, 255, 200); }"
+                        "#upLabel { font-size: 11px; color: #4CAF50; margin-left: 5px; }"
+                        "#downLabel { font-size: 11px; color: #2196F3; margin-left: 5px; }"
                         );
     
     m_titleLabel->setObjectName("titleLabel");
@@ -65,13 +68,13 @@ void NetworkWidget::createInterfaceRow(const QString &name) {
     rowLayout->setSpacing(2);
 
     QLabel *nameLabel = new QLabel(name, rowWidget);
-    nameLabel->setStyleSheet("font-size: 12px; font-weight: bold; color: rgba(255, 255, 255, 200);");
+    nameLabel->setObjectName("nameLabel");
     
     QLabel *upLabel = new QLabel("↑ 0 B/s", rowWidget);
-    upLabel->setStyleSheet("font-size: 11px; color: #4CAF50; margin-left: 5px;");
+    upLabel->setObjectName("upLabel");
 
     QLabel *downLabel = new QLabel("↓ 0 B/s", rowWidget);
-    downLabel->setStyleSheet("font-size: 11px; color: #2196F3; margin-left: 5px;");
+    downLabel->setObjectName("downLabel");
 
     rowLayout->addWidget(nameLabel);
     rowLayout->addWidget(upLabel);

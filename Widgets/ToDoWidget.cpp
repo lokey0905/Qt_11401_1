@@ -17,6 +17,7 @@ ToDoWidget::ToDoWidget(QWidget *parent) : BaseComponent(parent) {
 
     // Title
     m_titleLabel = new QLabel("TO DO LIST", this);
+    m_titleLabel->setObjectName("titleLabel");
     m_titleLabel->setAlignment(Qt::AlignLeft);
     mainLayout->addWidget(m_titleLabel);
 
@@ -68,23 +69,26 @@ void ToDoWidget::initStyle() {
         "  border: 1px solid rgba(255, 255, 255, 30);"
         "  border-radius: 8px;"
         "}"
-        "QLabel { color: white; font-family: 'Segoe UI'; font-weight: bold; font-size: 14px; }"
-        "QListWidget { background: transparent; outline: none; }"
-        "QListWidget::item { border-bottom: 1px solid rgba(255,255,255,10); padding: 2px; }"
+        "QLabel { color: white; background: transparent; font-family: 'Segoe UI', 'Microsoft JhengHei'; }"
+        "#titleLabel { font-size: 14px; font-weight: bold; color: rgba(255, 255, 255, 220); margin-bottom: 2px; }"
+        "QListWidget { background: transparent; outline: none; border: none; }"
+        "QListWidget::item { border-bottom: 1px solid rgba(255,255,255,10); padding: 4px; }"
         "QListWidget::item:selected { background: transparent; }"
+        "QListWidget::item:hover { background: rgba(255,255,255,10); }"
         "QLineEdit { "
-        "  background: rgba(255,255,255,20); "
-        "  border: none; border-radius: 4px; "
-        "  color: white; padding: 4px; "
+        "  background: rgba(0,0,0,50); "
+        "  border: 1px solid rgba(255,255,255,30); border-radius: 4px; "
+        "  color: white; padding: 4px; font-family: 'Segoe UI'; font-size: 12px;"
         "}"
         "QPushButton { "
-        "  background: rgba(0, 120, 215, 200); "
-        "  color: white; border: none; border-radius: 4px; font-weight: bold;"
+        "  background: rgba(255, 255, 255, 20); "
+        "  color: white; border: 1px solid rgba(255,255,255,30); border-radius: 4px; font-weight: bold;"
         "}"
-        "QPushButton:hover { background: rgba(0, 120, 215, 255); }"
-        "QCheckBox { color: white; spacing: 5px; }"
-        "QCheckBox::indicator { width: 16px; height: 16px; border: 1px solid #888; border-radius: 3px; background: transparent; }"
-        "QCheckBox::indicator:checked { background: #4CAF50; border: 1px solid #4CAF50; image: url(:/icons/check.png); }" // Simple check
+        "QPushButton:hover { background: rgba(255, 255, 255, 40); }"
+        "QCheckBox { color: rgba(255,255,255,220); spacing: 8px; font-family: 'Segoe UI'; font-size: 13px; background: transparent; }"
+        "QCheckBox::indicator { width: 16px; height: 16px; border: 1px solid rgba(255,255,255,100); border-radius: 3px; background: transparent; }"
+        "QCheckBox::indicator:hover { border-color: white; }"
+        "QCheckBox::indicator:checked { background: #4CAF50; border: 1px solid #4CAF50; }"
     );
 }
 
