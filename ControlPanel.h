@@ -6,11 +6,13 @@
 #include <QVariantMap>
 #include <QMap>
 #include <QString>
+#include <QJsonObject>
 
 // 引入自定義組件
 #include "ToolSettingsForm.h"
 #include "BaseComponent.h"
 #include "TimeWidget.h"
+#include "ThemeManager.h"
 
 namespace Ui { class ControlPanel; }
 
@@ -35,6 +37,16 @@ private slots:
     void on_saveTheme_clicked();
 
     /**
+     * @brief 處理主題分頁的載入按鈕點擊
+     */
+    void on_LoadTheme_clicked();
+
+    /**
+     * @brief 處理主題分頁的刪除按鈕點擊
+     */
+    void on_DeleteTheme_clicked();
+
+    /**
      * @brief 處理全域設定分頁的套用按鈕點擊
      */
     void on_applySetting_clicked();
@@ -44,6 +56,9 @@ private slots:
      * @param visible 是否顯示
      */
     //void on_widgetVisibilityChanged(bool visible);
+
+signals:
+    void requestLoadTheme(const QJsonObject &themeData);
 
 private:
     Ui::ControlPanel *ui;
@@ -80,6 +95,12 @@ private:
      * @brief 輔助函式：根據目前列表選中的項目，獲取對應的 Widget 實例
      */
     BaseComponent* getCurrentSelectedWidget();
+
+    ThemeManager themeMgr; // 主題管理員
+
+    // 核心功能函數
+    void updateThemeList(); // 更新 UI 上的主題清單
+    QJsonObject getGlobalLayoutData(); // 抓取目前所有 Widget 的狀態
 
     // 追蹤當前已連接訊號的 Widget，用於切換時斷開連線
     BaseComponent* m_currentConnectedWidget = nullptr;
