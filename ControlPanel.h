@@ -11,8 +11,11 @@
 // 引入自定義組件
 #include "ToolSettingsForm.h"
 #include "BaseComponent.h"
-#include "TimeWidget.h"
 #include "ThemeManager.h"
+
+#include <QSystemTrayIcon>
+#include <QMenu>
+
 
 namespace Ui { class ControlPanel; }
 
@@ -52,10 +55,9 @@ private slots:
     void on_applySetting_clicked();
 
     /**
-     * @brief 處理來自 ToolSettingsForm 的工具顯示/隱藏開關
-     * @param visible 是否顯示
+     * @brief 切換主視窗的顯示或隱藏狀態 (用於托盤連動) 喵
      */
-    //void on_widgetVisibilityChanged(bool visible);
+    void toggleVisibility();
 
 signals:
     void requestLoadTheme(const QJsonObject &themeData);
@@ -87,6 +89,11 @@ private:
     bool loadToolsConfiguration();
 
     /**
+     * @brief 初始化系統托盤功能與選單喵
+     */
+    void initTrayIcon();
+
+    /**
      * @brief 根據 m_toolsData 內的配置，預先實例化所有小工具
      */
     void initWidgets();
@@ -96,6 +103,12 @@ private:
      */
     BaseComponent* getCurrentSelectedWidget();
 
+    /**
+     * @brief 系統托盤圖示實例
+     */
+    QSystemTrayIcon *m_trayIcon = nullptr;
+    bool m_forceClose = false; // 標記是否強制關閉程式
+
     ThemeManager themeMgr; // 主題管理員
 
     // 核心功能函數
@@ -104,6 +117,14 @@ private:
 
     // 追蹤當前已連接訊號的 Widget，用於切換時斷開連線
     BaseComponent* m_currentConnectedWidget = nullptr;
+
+protected:
+    /**
+     * @brief 處理視窗關閉事件
+     * 若托盤圖示正在顯示，則縮排至托盤；否則直接結束程式喵
+     * @param event 關閉事件指標
+     */
+    void closeEvent(QCloseEvent *event) override;
 };
 
 #endif // CONTROLPANEL_H
