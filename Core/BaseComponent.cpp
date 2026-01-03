@@ -10,6 +10,11 @@ BaseComponent::BaseComponent(QWidget *parent) : QWidget(parent) {
     // 基礎視窗設定：無邊框、背景透明、工具視窗(不顯示在工作列)
     this->setWindowFlags(Qt::FramelessWindowHint | Qt::Tool);
     this->setAttribute(Qt::WA_TranslucentBackground);
+
+    // 初始化懸停監控定時器
+    m_hoverCheckTimer = new QTimer(this);
+    m_hoverCheckTimer->setInterval(100); // 100ms 輪詢一次
+    connect(m_hoverCheckTimer, &QTimer::timeout, this, &BaseComponent::handleHoverCheck);
 }
 
 void BaseComponent::initStyle() {
@@ -23,7 +28,7 @@ void BaseComponent::initStyle() {
         );
 }
 
-// --- 視窗屬性讀取 (解決遇到的 undefined reference 錯誤) ---
+/** --- 視窗狀態查詢 --- **/
 
 int BaseComponent::windowLayer() const {
     if (this->windowFlags() & Qt::WindowStaysOnTopHint) return 1; // 置頂
@@ -35,7 +40,8 @@ bool BaseComponent::isClickThrough() const {
     // 檢查目前的視窗旗標中是否含有「點擊穿透」標籤
     return (this->windowFlags() & Qt::WindowTransparentForInput);
 }
-// --- 行為設定 ---
+
+/** --- 行為控制實作 --- **/
 
 void BaseComponent::setWindowLayer(int layer) {
     Qt::WindowFlags flags = this->windowFlags();
@@ -54,24 +60,42 @@ void BaseComponent::setWindowLayer(int layer) {
 }
 
 // --- 懸停透明度邏輯 ---
-
-void BaseComponent::enterEvent(QEnterEvent *event) {
+void BaseComponent::setHoverHide(bool enable) {
+    m_hoverHide = enable;
     if (m_hoverHide) {
-        // 設定透明度，保留 0.01 確保滑鼠離開時仍能觸發事件
-        this->setWindowOpacity(qMax(0.01, 1.0 - m_hoverOpacity));
+        m_hoverCheckTimer->start(); // 開啟功能即啟動主動輪詢
+    } else {
+        m_hoverCheckTimer->stop();
+        this->setWindowOpacity(1.0); // 確保功能關閉時恢復顯示
     }
-    QWidget::enterEvent(event);
 }
 
-void BaseComponent::leaveEvent(QEvent *event) {
-    if (m_hoverHide) {
-        this->setWindowOpacity(1.0); // 恢復完全不透明
+/** --- 懸停偵測核心邏輯 (主動輪詢) --- **/
+
+void BaseComponent::handleHoverCheck() {
+    if (!m_hoverHide) return;
+
+    // 主動偵測滑鼠是否在元件範圍內 (解決點擊穿透導致 enterEvent 不觸發的問題)
+    bool isHovering = this->geometry().contains(QCursor::pos());
+
+    if (isHovering) {
+        double targetOpacity = qMax(0.01, 1.0 - m_hoverOpacity);
+        if (this->windowOpacity() != targetOpacity) {
+            this->setWindowOpacity(targetOpacity);
+        }
+    } else {
+        if (this->windowOpacity() != 1.0) {
+            this->setWindowOpacity(1.0);
+        }
     }
-    QWidget::leaveEvent(event);
 }
 
-// --- 拖曳與吸附核心邏輯 ---
+// 舊邏輯
+// 會與點擊穿透衝突 暫時保留
+void BaseComponent::enterEvent(QEnterEvent *event) { QWidget::enterEvent(event); }
+void BaseComponent::leaveEvent(QEvent *event) { QWidget::leaveEvent(event); }
 
+/** --- 拖曳與吸附處理 --- **/
 void BaseComponent::mousePressEvent(QMouseEvent *event) {
     bool isGlobalLocked = SettingsManager::instance()->isGlobalDragLocked();
     if (event->button() == Qt::LeftButton && !isGlobalLocked && m_isDraggable) {
@@ -102,7 +126,7 @@ void BaseComponent::performSnap(QPoint &newPos) {
     if (!currentScreen) currentScreen = QApplication::primaryScreen();
     QRect screenRect = currentScreen->availableGeometry();
 
-    // 1. 螢幕邊緣吸附
+    // 螢幕邊緣吸附
     if (qAbs(newPos.x() - screenRect.left()) < snapMargin)
         newPos.setX(screenRect.left());
     if (qAbs(newPos.x() + this->width() - screenRect.right()) < snapMargin)
@@ -112,7 +136,7 @@ void BaseComponent::performSnap(QPoint &newPos) {
     if (qAbs(newPos.y() + this->height() - screenRect.bottom()) < snapMargin)
         newPos.setY(screenRect.bottom() - this->height());
 
-    // 2. 元件間吸附
+    // 元件間吸附
     const auto widgets = QApplication::topLevelWidgets();
     for (QWidget *w : widgets) {
         // 排除自己、隱藏的視窗、以及非 BaseComponent 的視窗

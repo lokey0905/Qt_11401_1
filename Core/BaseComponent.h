@@ -4,6 +4,8 @@
 #include <QWidget>
 #include <QPoint>
 #include <QMouseEvent>
+#include <QTimer>
+#include <QCursor>
 
 /**
  * @brief 所有桌面小工具的基底類別
@@ -28,7 +30,7 @@ public:
     void setWindowLayer(int layer); // 0:普通, 1:置頂, 2:置底
 
     // 透明度與懸停效果
-    void setHoverHide(bool enable) { m_hoverHide = enable; }
+    void setHoverHide(bool enable);
     void setHoverOpacity(double opacity) { m_hoverOpacity = opacity; } // 0.0 ~ 1.0
 
     // --- 狀態讀取 (Getters) ---
@@ -81,12 +83,19 @@ protected:
     void enterEvent(QEnterEvent *event) override;
     void leaveEvent(QEvent *event) override;
 
+private slots:
+    /** @brief 定時檢查滑鼠位置，處理穿透模式下的懸停邏輯 */
+    void handleHoverCheck();
+
 private:
     // 拖曳相關內部狀態
     bool m_isDraggable = true;
     bool m_isSnapEnabled = true;
     bool m_isMoving = false;
     QPoint m_dragPosition; // 紀錄滑鼠按下時的相對位置
+
+    // 監控計時器
+    QTimer *m_hoverCheckTimer;
 
     // 邊緣吸附運算
     void performSnap(QPoint &newPos);
