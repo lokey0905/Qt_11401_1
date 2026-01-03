@@ -21,7 +21,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="tab_skin">
       <attribute name="title">
@@ -179,34 +179,13 @@
            </widget>
           </item>
           <item row="3" column="0">
-           <widget class="QLabel" name="label_lang">
-            <property name="text">
-             <string>顯示語言:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="1">
-           <widget class="QComboBox" name="lang_comboBox">
-            <item>
-             <property name="text">
-              <string>繁體中文</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>English</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="4" column="0">
            <widget class="QLabel" name="label_globalInterval">
             <property name="text">
              <string>全域更新頻率:</string>
             </property>
            </widget>
           </item>
-          <item row="4" column="1">
+          <item row="3" column="1">
            <layout class="QHBoxLayout" name="horizontalLayout_interval">
             <item>
              <widget class="QComboBox" name="globalInterval_comboBox">

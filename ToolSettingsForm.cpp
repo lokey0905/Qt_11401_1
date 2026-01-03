@@ -60,7 +60,7 @@ void ToolSettingsForm::loadToolData(const QVariantMap &toolData) {
 }
 
 void ToolSettingsForm::createAdvancedSettings(const QString &toolId) {
-    // 清除舊的動態元件 (如果有)
+    // 清除舊的動態元件
     // 這裡簡單實作：如果已經有 advanced_groupBox 就先移除
     QGroupBox *oldGroup = findChild<QGroupBox*>("advanced_groupBox");
     if (oldGroup) {
@@ -207,7 +207,7 @@ void ToolSettingsForm::updateAllUI(BaseComponent* w) {
     ui->coordY_lineEdit->setText(QString::number(w->y()));
     ui->enableTool_checkBox->setChecked(w->isVisible());
 
-    // 這裡需要確保 BaseComponent 有這些 getter 函式喔
+    // 這裡需要確保 BaseComponent 有這些 getter 函式
     ui->draggable_checkBox->setChecked(w->isDraggable());
     ui->snapToEdge_checkBox->setChecked(w->isSnapEnabled());
     ui->hoverHide_checkBox->setChecked(w->isHoverHideEnabled());

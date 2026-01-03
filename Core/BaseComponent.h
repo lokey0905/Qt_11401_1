@@ -57,6 +57,27 @@ public:
      */
     bool isClickThrough() const;
 
+    /**
+     * @brief 設定是否開啟滑鼠點擊穿透喵
+     * @param enabled 為 true 時視窗將不再接收滑鼠事件
+     */
+    void setClickThrough(bool enabled) {
+        Qt::WindowFlags flags = windowFlags();
+        if (enabled) {
+            // 加上穿透旗標喵
+            flags |= Qt::WindowTransparentForInput;
+        } else {
+            // 移除穿透旗標喵
+            flags &= ~Qt::WindowTransparentForInput;
+        }
+        setWindowFlags(flags);
+
+        // 必須重新 show 才能確保 Windows 系統正確套用旗標變動喵
+        if (isVisible()) {
+            show();
+        }
+    }
+
 signals:
     // 當視窗座標改變時發出，讓控制面板的輸入框能跟著動
     void positionChanged(int x, int y);

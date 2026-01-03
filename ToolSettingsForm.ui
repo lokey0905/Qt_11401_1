@@ -118,13 +118,6 @@
         </property>
        </widget>
       </item>
-      <item row="8" column="0" colspan="2">
-       <widget class="QCheckBox" name="savePosition_checkBox">
-        <property name="text">
-         <string>儲存元件擺放位置</string>
-        </property>
-       </widget>
-      </item>
      </layout>
     </widget>
    </item>
@@ -166,13 +159,6 @@
       </size>
      </property>
     </spacer>
-   </item>
-   <item>
-    <widget class="QPushButton" name="saveSettings_button">
-     <property name="text">
-      <string>儲存所有設定</string>
-     </property>
-    </widget>
    </item>
   </layout>
  </widget>

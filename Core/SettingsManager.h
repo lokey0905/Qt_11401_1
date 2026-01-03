@@ -32,6 +32,12 @@ public:
     void saveWidgetConfig(const QString &id, const QVariantMap &config);
     QVariantMap loadWidgetConfig(const QString &id);
 
+    /** @brief 獲取上次存檔的主題名稱 **/
+    QString lastTheme() const { return m_lastTheme; }
+
+    /** @brief 儲存目前使用的主題名稱到設定檔 **/
+    void setLastTheme(const QString &themeName);
+
 signals:
     void globalDragLockedChanged(bool locked);
     void trayIconSettingChanged(bool show);
@@ -44,6 +50,7 @@ private:
     bool m_globalDragLocked = false;
     bool m_showTrayIcon = true;
     QSettings *m_settings;
+    QString m_lastTheme;
 };
 
 #endif // SETTINGSMANAGER_H

@@ -120,6 +120,19 @@ ControlPanel::ControlPanel(QWidget *parent) :
         else m_trayIcon->hide();
     });
 
+    /** 8. 載入上次套用主題 **/
+    QTimer::singleShot(500, this, [this]() {
+        QString lastTheme = SettingsManager::instance()->lastTheme();
+        if (!lastTheme.isEmpty()) {
+            // 尋找清單中是否有對應的主題項目
+            QList<QListWidgetItem*> items = ui->themeList_widget->findItems(lastTheme, Qt::MatchExactly);
+            if (!items.isEmpty()) {
+                ui->themeList_widget->setCurrentItem(items.first());
+                this->on_LoadTheme_clicked();
+            }
+        }
+    });
+
     connect(ui->saveTheme_button, &QPushButton::clicked, this, &ControlPanel::on_saveTheme_clicked);
     connect(ui->applySetting_button, &QPushButton::clicked, this, &ControlPanel::on_applySetting_clicked);
     updateThemeList();
@@ -246,22 +259,6 @@ void ControlPanel::on_saveTheme_clicked() {
     ui->themeName_lineEdit->clear();
 }
 
-void ControlPanel::on_LoadTheme_clicked() {
-    QListWidgetItem *item = ui->themeList_widget->currentItem();
-    if (!item) return;
-    QJsonObject data = themeMgr.loadTheme(item->text());
-    QJsonArray widgets = data["widgets"].toArray();
-    for (int i = 0; i < widgets.size(); ++i) {
-        QJsonObject obj = widgets[i].toObject();
-        QString id = obj["id"].toString();
-        if (m_widgetInstances.contains(id)) {
-            m_widgetInstances[id]->move(obj["x"].toInt(), obj["y"].toInt());
-            m_widgetInstances[id]->setVisible(obj["visible"].toBool());
-        }
-    }
-    on_toolList_currentRowChanged(ui->toolList_widget->currentRow());
-}
-
 void ControlPanel::on_DeleteTheme_clicked() {
     QListWidgetItem *item = ui->themeList_widget->currentItem();
     if (item) { themeMgr.deleteTheme(item->text()); updateThemeList(); }
@@ -272,19 +269,119 @@ void ControlPanel::updateThemeList() {
     ui->themeList_widget->addItems(themeMgr.getThemeList());
 }
 
+/**
+ * @brief 抓取目前所有小工具的完整狀態（包含通用屬性與特定元件的私有設定）
+ */
 QJsonObject ControlPanel::getGlobalLayoutData() {
     QJsonObject root;
     QJsonArray widgetsArray;
+
     for (auto it = m_widgetInstances.begin(); it != m_widgetInstances.end(); ++it) {
+        QString id = it.key();
+        BaseComponent* w = it.value();
+        if (!w) continue;
+
         QJsonObject widgetInfo;
-        widgetInfo["id"] = it.key();
-        widgetInfo["x"] = it.value()->x();
-        widgetInfo["y"] = it.value()->y();
-        widgetInfo["visible"] = it.value()->isVisible();
+        // --- A. 通用基礎屬性 (BaseComponent) ---
+        widgetInfo["id"] = id;
+        widgetInfo["x"] = w->x();
+        widgetInfo["y"] = w->y();
+        widgetInfo["visible"] = w->isVisible();
+        widgetInfo["draggable"] = w->isDraggable();
+        widgetInfo["snap"] = w->isSnapEnabled();
+        widgetInfo["hoverHide"] = w->isHoverHideEnabled();
+        widgetInfo["hoverOpacity"] = w->hoverOpacity();
+        widgetInfo["layer"] = w->windowLayer();
+        widgetInfo["clickThrough"] = w->isClickThrough();
+
+        qDebug() << w -> isVisible();
+
+        // --- B. 針對特定 Widget 獲取私有設定 (動態轉型) ---
+
+        // 1. CpuWidget
+        if (auto* cpuW = dynamic_cast<CpuWidget*>(w)) {
+            widgetInfo["frequencyMode"] = static_cast<int>(cpuW->frequencyMode());
+        }
+        // 2. DiskWidget
+        else if (auto* diskW = dynamic_cast<DiskWidget*>(w)) {
+            widgetInfo["showUsage"] = diskW->isShowUsagePercent();
+            widgetInfo["showSpeed"] = diskW->isShowTransferSpeed();
+            widgetInfo["showActive"] = diskW->isShowActiveTime();
+        }
+        // 3. NetworkWidget
+        else if (auto* netW = dynamic_cast<NetworkWidget*>(w)) {
+            widgetInfo["showInBits"] = netW->isShowInBits();
+            widgetInfo["selectedInterfaces"] = QJsonArray::fromStringList(netW->getSelectedInterfaces());
+        }
+        // 4. ImageWidget
+        else if (auto* imgW = dynamic_cast<ImageWidget*>(w)) {
+            widgetInfo["scale"] = imgW->currentScale();
+            widgetInfo["path"] = imgW->currentPath();
+        }
+
         widgetsArray.append(widgetInfo);
     }
     root["widgets"] = widgetsArray;
     return root;
+}
+
+void ControlPanel::on_LoadTheme_clicked() {
+    QListWidgetItem *item = ui->themeList_widget->currentItem();
+    if (!item) return;
+    QString themeName = item->text();
+    QJsonObject data = themeMgr.loadTheme(themeName);
+    QJsonArray widgets = data["widgets"].toArray();
+
+    for (int i = 0; i < widgets.size(); ++i) {
+        QJsonObject obj = widgets[i].toObject();
+        QString id = obj["id"].toString();
+        if (!m_widgetInstances.contains(id)) continue;
+
+        BaseComponent* w = m_widgetInstances[id];
+
+        // --- A. 還原通用外殼 (BaseComponent) ---
+        w->move(obj["x"].toInt(), obj["y"].toInt());
+        w->setVisible(obj["visible"].toBool());
+        w->setDraggable(obj["draggable"].toBool());
+        w->setSnapToEdge(obj["snap"].toBool());
+        w->setHoverHide(obj["hoverHide"].toBool());
+        w->setHoverOpacity(obj["hoverOpacity"].toDouble());
+        w->setWindowLayer(obj["layer"].toInt());
+        w->setClickThrough(obj["clickThrough"].toBool());
+
+        // --- B. 還原特定私有設定 ---
+
+        if (auto* cpuW = dynamic_cast<CpuWidget*>(w)) {
+            cpuW->setCustomSetting("frequencyMode", obj["frequencyMode"].toVariant());
+        }
+        else if (auto* diskW = dynamic_cast<DiskWidget*>(w)) {
+            diskW->setCustomSetting("showUsage", obj["showUsage"].toVariant());
+            diskW->setCustomSetting("showSpeed", obj["showSpeed"].toVariant());
+            diskW->setCustomSetting("showActive", obj["showActive"].toVariant());
+        }
+        else if (auto* netW = dynamic_cast<NetworkWidget*>(w)) {
+            netW->setCustomSetting("showInBits", obj["showInBits"].toVariant());
+            // 這裡假設 setCustomSetting 裡面有實作還原介面清單喵
+            netW->setCustomSetting("selectedInterfaces", obj["selectedInterfaces"].toVariant());
+        }
+        else if (auto* imgW = dynamic_cast<ImageWidget*>(w)) {
+            imgW->setCustomSetting("scale", obj["scale"].toVariant());
+            imgW->setCustomSetting("path", obj["path"].toVariant());
+        }
+
+        if (obj["visible"].toBool())
+        {
+            qDebug() << id;
+            w->show(); // 重新顯示以應用變動
+        }
+        else
+        {
+            w->hide();
+        }
+    }
+    // 更新左側列表對應的 UI 面板喵
+    on_toolList_currentRowChanged(ui->toolList_widget->currentRow());
+    SettingsManager::instance()->setLastTheme(themeName);
 }
 
 ControlPanel::~ControlPanel() {

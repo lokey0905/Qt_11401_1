@@ -14,6 +14,7 @@ SettingsManager::SettingsManager(QObject *parent) : QObject(parent) {
     // 啟動時自動載入之前存過的數值
     m_globalDragLocked = m_settings->value("Global/DragLocked", false).toBool();
     m_showTrayIcon = m_settings->value("Global/ShowTrayIcon", true).toBool();
+    m_lastTheme = m_settings->value("Global/LastTheme", "").toString();
 }
 
 SettingsManager* SettingsManager::instance() {
@@ -73,5 +74,13 @@ void SettingsManager::setShowTrayIcon(bool show) {
         emit trayIconSettingChanged(show);
 
         qDebug() << "SettingsManager: 托盤圖示狀態更新為 ->" << show;
+    }
+}
+
+void SettingsManager::setLastTheme(const QString &themeName) {
+    if (m_lastTheme != themeName) {
+        m_lastTheme = themeName;
+        m_settings->setValue("Global/LastTheme", themeName);
+        m_settings->sync(); // 確保立即寫入磁碟喵
     }
 }
