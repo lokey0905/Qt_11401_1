@@ -19,6 +19,7 @@ SOURCES += \
     Widgets/DiskWidget.cpp \
     Widgets/NetworkWidget.cpp \
     Widgets/ToDoWidget.cpp \
+    Widgets/PomodoroWidget.cpp \
     main.cpp
 
 HEADERS += \
@@ -32,7 +33,8 @@ HEADERS += \
     Widgets/CpuWidget.h \
     Widgets/DiskWidget.h \
     Widgets/NetworkWidget.h \
-    Widgets/ToDoWidget.h
+    Widgets/ToDoWidget.h \
+    Widgets/PomodoroWidget.h
 
 FORMS += \
     ControlPanel.ui \

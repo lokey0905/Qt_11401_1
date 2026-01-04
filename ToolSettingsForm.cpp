@@ -2,6 +2,7 @@
 #include "ui_ToolSettingsForm.h"
 #include "Widgets/NetworkWidget.h"
 #include "ImageWidget.h"
+#include "Widgets/PomodoroWidget.h"
 #include <QFileDialog>
 #include <QDir>
 #include <QFile>
@@ -215,6 +216,30 @@ void ToolSettingsForm::createAdvancedSettings(const QString &toolId) {
 
         ui->verticalLayout->insertWidget(ui->verticalLayout->count()-1, advGroup);
     }
+    else if (toolId == "pomodoro") {
+        QGroupBox *advGroup = new QGroupBox("番茄鐘設定 (分鐘)", this);
+        advGroup->setObjectName("advanced_groupBox");
+        QVBoxLayout *layout = new QVBoxLayout(advGroup);
+
+        auto createSpinBox = [&](const QString &label, const QString &key, int defaultVal) {
+            QLabel *lbl = new QLabel(label, advGroup);
+            QSpinBox *spin = new QSpinBox(advGroup);
+            spin->setRange(1, 120);
+            spin->setValue(defaultVal);
+            spin->setObjectName(key + "_spinBox");
+            layout->addWidget(lbl);
+            layout->addWidget(spin);
+            connect(spin, QOverload<int>::of(&QSpinBox::valueChanged), this, [this, key](int val){
+                emit settingChanged(key, val);
+            });
+        };
+
+        createSpinBox("工作時間:", "workDuration", 25);
+        createSpinBox("短休息時間:", "shortBreakDuration", 5);
+        createSpinBox("長休息時間:", "longBreakDuration", 15);
+
+        ui->verticalLayout->insertWidget(ui->verticalLayout->count()-1, advGroup);
+    }
 }
 
 #include "Widgets/CpuWidget.h" // 需要引入以使用 dynamic_cast
@@ -315,6 +340,20 @@ void ToolSettingsForm::updateAllUI(BaseComponent* w) {
 
         // 同步路徑
         // ui->musicPath_lineEdit->setText(imgWidget->currentPath());
+    }
+    PomodoroWidget* pomoWidget = dynamic_cast<PomodoroWidget*>(w);
+    if (pomoWidget) {
+        auto syncSpin = [&](const QString &key, int val) {
+            QSpinBox *spin = findChild<QSpinBox*>(key + "_spinBox");
+            if (spin) {
+                spin->blockSignals(true);
+                spin->setValue(val);
+                spin->blockSignals(false);
+            }
+        };
+        syncSpin("workDuration", pomoWidget->getWorkDuration());
+        syncSpin("shortBreakDuration", pomoWidget->getShortBreakDuration());
+        syncSpin("longBreakDuration", pomoWidget->getLongBreakDuration());
     }
 
     this->blockSignals(false);

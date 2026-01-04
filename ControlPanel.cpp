@@ -9,6 +9,7 @@
 #include "Widgets/NetworkWidget.h"
 #include "Widgets/ToDoWidget.h"
 #include "Widgets/ImageWidget.h"
+#include "Widgets/PomodoroWidget.h"
 
 #include <QFile>
 #include <QJsonDocument>
@@ -154,6 +155,7 @@ void ControlPanel::initWidgets() {
         else if (widgetClass == "NetworkWidget") instance = new NetworkWidget();
         else if (widgetClass == "ToDoWidget") instance = new ToDoWidget();
         else if (widgetClass == "ImageWidget") instance = new ImageWidget();
+        else if (widgetClass == "PomodoroWidget") instance = new PomodoroWidget();
 
         if (instance) {
             m_widgetInstances.insert(id, instance);
