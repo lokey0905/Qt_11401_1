@@ -46,5 +46,11 @@
         "name": "8. 番茄鐘 (Pomodoro)",
         "widget_class": "PomodoroWidget",
         "default_enabled": false
+    },
+    {
+        "id": "clipboard_history",
+        "name": "9. 剪貼簿歷史 (Clipboard)",
+        "widget_class": "ClipboardWidget",
+        "default_enabled": false
     }
 ]
