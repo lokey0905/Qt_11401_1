@@ -40,5 +40,11 @@
         "name": "7. 音樂播放器 (Media)",
         "widget_class": "MediaWidget",
         "default_enabled": false
+    },
+    {
+        "id": "pomodoro",
+        "name": "8. 番茄鐘 (Pomodoro)",
+        "widget_class": "PomodoroWidget",
+        "default_enabled": false
     }
 ]
