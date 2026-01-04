@@ -20,6 +20,7 @@ SOURCES += \
     Widgets/NetworkWidget.cpp \
     Widgets/ToDoWidget.cpp \
     Widgets/PomodoroWidget.cpp \
+    Widgets/ClipboardWidget.cpp \
     main.cpp
 
 HEADERS += \
@@ -34,7 +35,8 @@ HEADERS += \
     Widgets/DiskWidget.h \
     Widgets/NetworkWidget.h \
     Widgets/ToDoWidget.h \
-    Widgets/PomodoroWidget.h
+    Widgets/PomodoroWidget.h \
+    Widgets/ClipboardWidget.h
 
 FORMS += \
     ControlPanel.ui \

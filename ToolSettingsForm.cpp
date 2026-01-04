@@ -3,6 +3,7 @@
 #include "Widgets/NetworkWidget.h"
 #include "ImageWidget.h"
 #include "Widgets/PomodoroWidget.h"
+#include "Widgets/ClipboardWidget.h"
 #include <QFileDialog>
 #include <QDir>
 #include <QFile>
@@ -240,6 +241,26 @@ void ToolSettingsForm::createAdvancedSettings(const QString &toolId) {
 
         ui->verticalLayout->insertWidget(ui->verticalLayout->count()-1, advGroup);
     }
+    else if (toolId == "clipboard_history") {
+        QGroupBox *advGroup = new QGroupBox("剪貼簿設定", this);
+        advGroup->setObjectName("advanced_groupBox");
+        QVBoxLayout *layout = new QVBoxLayout(advGroup);
+
+        QLabel *lblLimit = new QLabel("歷史紀錄數量限制:", advGroup);
+        QSpinBox *spinLimit = new QSpinBox(advGroup);
+        spinLimit->setRange(1, 100);
+        spinLimit->setValue(30);
+        spinLimit->setObjectName("historyLimit_spinBox");
+        
+        layout->addWidget(lblLimit);
+        layout->addWidget(spinLimit);
+
+        connect(spinLimit, QOverload<int>::of(&QSpinBox::valueChanged), this, [this](int val){
+            emit settingChanged("historyLimit", val);
+        });
+
+        ui->verticalLayout->insertWidget(ui->verticalLayout->count()-1, advGroup);
+    }
 }
 
 #include "Widgets/CpuWidget.h" // 需要引入以使用 dynamic_cast
@@ -354,6 +375,15 @@ void ToolSettingsForm::updateAllUI(BaseComponent* w) {
         syncSpin("workDuration", pomoWidget->getWorkDuration());
         syncSpin("shortBreakDuration", pomoWidget->getShortBreakDuration());
         syncSpin("longBreakDuration", pomoWidget->getLongBreakDuration());
+    }
+    ClipboardWidget* clipWidget = dynamic_cast<ClipboardWidget*>(w);
+    if (clipWidget) {
+        QSpinBox *spinLimit = findChild<QSpinBox*>("historyLimit_spinBox");
+        if (spinLimit) {
+            spinLimit->blockSignals(true);
+            spinLimit->setValue(clipWidget->getHistoryLimit());
+            spinLimit->blockSignals(false);
+        }
     }
 
     this->blockSignals(false);

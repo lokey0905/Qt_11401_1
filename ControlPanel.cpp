@@ -10,6 +10,7 @@
 #include "Widgets/ToDoWidget.h"
 #include "Widgets/ImageWidget.h"
 #include "Widgets/PomodoroWidget.h"
+#include "Widgets/ClipboardWidget.h"
 
 #include <QFile>
 #include <QJsonDocument>
@@ -156,6 +157,7 @@ void ControlPanel::initWidgets() {
         else if (widgetClass == "ToDoWidget") instance = new ToDoWidget();
         else if (widgetClass == "ImageWidget") instance = new ImageWidget();
         else if (widgetClass == "PomodoroWidget") instance = new PomodoroWidget();
+        else if (widgetClass == "ClipboardWidget") instance = new ClipboardWidget();
 
         if (instance) {
             m_widgetInstances.insert(id, instance);
