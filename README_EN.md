@@ -2,6 +2,8 @@
 
 ![Project Status](https://img.shields.io/badge/status-active-brightgreen) ![Qt Version](https://img.shields.io/badge/Qt-5.15%2B-blue) ![Platform](https://img.shields.io/badge/platform-Windows-lightgrey)
 
+[🇺🇸 English](README_EN.md) | [🇹🇼 繁體中文](README.md)
+
 ## 📖 Overview
 
 **Desktop Widget Suite** is a high-performance desktop information monitoring and utility collection developed with Qt/C++. This project aims to provide a lightweight, modular, and highly customizable desktop experience similar to Rainmeter.

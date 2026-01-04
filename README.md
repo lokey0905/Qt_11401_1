@@ -2,6 +2,8 @@
 
 ![Project Status](https://img.shields.io/badge/status-active-brightgreen) ![Qt Version](https://img.shields.io/badge/Qt-5.15%2B-blue) ![Platform](https://img.shields.io/badge/platform-Windows-lightgrey)
 
+[🇺🇸 English](README_EN.md) | [🇹🇼 繁體中文](README.md)
+
 ## 📖 專案簡介 (Overview)
 
 **Desktop Widget Suite** 是一個基於 Qt/C++ 開發的高效能桌面資訊監控與實用工具集合。本專案旨在提供類似 Rainmeter 的輕量級、模組化且高度可客製化的桌面體驗。
